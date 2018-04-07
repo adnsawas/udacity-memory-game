@@ -89,12 +89,22 @@ resetGame();
  			
  			console.log("Match");
 
+
+
  			// Keep the card open and mark it as match
  			openedCards[0].classList.remove("open");
  			openedCards[0].classList.add("match");
+ 			openedCards[0].classList.add("selected");
 
  			openedCards[1].classList.remove("open");
  			openedCards[1].classList.add("match");
+ 			openedCards[1].classList.add("selected");
+
+ 			// Animate here if possible
+ 			$( ".card.selected" ).effect( "highlight", {}, 500);
+
+ 			openedCards[0].classList.remove("selected");
+ 			openedCards[1].classList.remove("selected");
 
  			// Increase the match counter
  			matchesCount++;
@@ -112,6 +122,7 @@ resetGame();
  			console.log("Not Match");
 
  			// Animate here if possible
+ 			$( ".card.open" ).effect( "shake", {}, 500);
 
  			unmatchedCardsTimerIsRunning = true;
  			// Close the two cards after 0.5 second
@@ -182,6 +193,7 @@ function resetGame() {
 	attempts = 0;
 	unmatchedCardsTimerIsRunning = false;
 	shuffeledContent = [];
+	document.getElementsByClassName("moves")[0].innerText = "0";
 
 	for (var i = 0; i < cardsContent.length; i++) {
 		shuffeledContent.push(cardsContent[i]);
@@ -209,6 +221,14 @@ function resetGame() {
 
 	 // Add the shuffeled cards into the deck
 	 document.getElementsByClassName("deck")[0].appendChild(virtualDeck);
+
+	 $( ".card" ).show( "size", {}, 500, function(){
+	 	let cards = document.getElementsByClassName("card");
+	 	for (let i = 0; i < cards.length; i++)
+	 	{
+	 		cards[i].setAttribute("style", "display: flex");
+	 	}
+	 });
 }
 
 
