@@ -2,7 +2,7 @@
  * Create a list that holds all of your cards
  */
 
-const cardsContent = ["fa-diamond",
+const cardsContent =   ["fa-diamond",
 						"fa-paper-plane-o",
 						"fa-heart",
 						"fa-home",
@@ -11,37 +11,30 @@ const cardsContent = ["fa-diamond",
 						"fa-camera",
 						"fa-money"];
 
+let shuffeledContent = [];
+for (var i = 0; i < cardsContent.length; i++) {
+	shuffeledContent.push(cardsContent[i]);
+	shuffeledContent.push(cardsContent[i]);
+}
+
+shuffeledContent = shuffle(shuffeledContent);
+
 let virtualDeck = document.createDocumentFragment();
 
-for (let i = 0; i < 16; i = i + 2) {
+for (let i = 0; i < 16; i++) {
 	let card1 = document.createElement("li");
-	let card2 = document.createElement("li");
 	let card1Content = document.createElement("i");
-	let card2Content = document.createElement("i");
 
 	card1Content.classList.add("fa");
-	card1Content.classList.add(cardsContent[i/2]);
-	
-	card2Content.classList.add("fa");
-	card2Content.classList.add(cardsContent[i/2]);
+	card1Content.classList.add(shuffeledContent[i]);
 
 	card1.classList.add("card");
-	card2.classList.add("card");
 
 	// This is for testing only, remove when game is complete
 	card1.classList.add("show");
-	card2.classList.add("show");
-
 	card1.appendChild(card1Content);
-	card2.appendChild(card2Content);
-
 	virtualDeck.appendChild(card1);
-	virtualDeck.appendChild(card2);
 }
-
-
- //let shuffeledDeck = document.createDocumentFragment();
- //shuffeledDeck.children =  shuffle(virtualDeck.children);
 
  // Add the shuffeled cards into the deck
  document.getElementsByClassName("deck")[0].appendChild(virtualDeck);
