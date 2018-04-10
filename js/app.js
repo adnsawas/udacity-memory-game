@@ -2,11 +2,19 @@
  * Create a list that holds all of your cards
  */
 
+let stars = document.getElementsByClassName("stars")[0];
 let openedCards = [];
 let matchesCount = 0;
 let attempts = 0;
-let unmatchedCardsTimerIsRunning = false;
+let unmatchedCardsTimerIsRunning = false; // This variable is used to prevent selecting any card when an animation is running
 let shuffeledContent = [];
+
+// Timer variables
+let seconds = 0;
+let minutes = 0;
+let secondsText = document.getElementById("seconds");
+let minutesText = document.getElementById("minutes");
+let interval;
 
 const cardsContent =   ["fa-diamond",
 						"fa-paper-plane-o",
@@ -19,33 +27,7 @@ const cardsContent =   ["fa-diamond",
 
 resetGame();
 
-// for (var i = 0; i < cardsContent.length; i++) {
-// 	shuffeledContent.push(cardsContent[i]);
-// 	shuffeledContent.push(cardsContent[i]);
-// }
-
-// shuffeledContent = shuffle(shuffeledContent);
-
-// let virtualDeck = document.createDocumentFragment();
-
-// for (let i = 0; i < 16; i++) {
-// 	let card1 = document.createElement("li");
-// 	let card1Content = document.createElement("i");
-
-// 	card1Content.classList.add("fa");
-// 	card1Content.classList.add(shuffeledContent[i]);
-
-// 	card1.classList.add("card");
-
-// 	// This is for testing only, remove when game is complete
-// 	//card1.classList.add("show");
-// 	card1.appendChild(card1Content);
-// 	virtualDeck.appendChild(card1);
-// }
-
-//  // Add the shuffeled cards into the deck
-//  document.getElementsByClassName("deck")[0].appendChild(virtualDeck);
-
+// Adding the event listener and handling of a click
  document.getElementsByClassName("deck")[0].addEventListener("click", function(event) {
  	if (unmatchedCardsTimerIsRunning) {return;}
  	let clickedTarget;
@@ -82,27 +64,28 @@ resetGame();
  			return;
  		}
 
+ 		// Increase moves by one
  		document.getElementsByClassName("moves")[0].innerText = ++attempts;
+
+ 		// evaluate how many stars should appear
+ 		evaluateStars();
+
  		// The user selected the second card and it is time to evaluate
  		if (isCardsMatched()) {
-
- 			
  			console.log("Match");
-
-
-
- 			// Keep the card open and mark it as match
+ 			// Keep the matched cards open and mark them as match
  			openedCards[0].classList.remove("open");
  			openedCards[0].classList.add("match");
- 			openedCards[0].classList.add("selected");
+ 			openedCards[0].classList.add("selected"); // Added this class to use jQuery selector to animate cards with "selected" class
 
  			openedCards[1].classList.remove("open");
  			openedCards[1].classList.add("match");
- 			openedCards[1].classList.add("selected");
+ 			openedCards[1].classList.add("selected"); // Added this class to use jQuery selector to animate cards with "selected" class
 
  			// Animate here if possible
  			$( ".card.selected" ).effect( "highlight", {}, 500);
 
+ 			// Remove the "selected" calss from so they do not get animated again when another match is found
  			openedCards[0].classList.remove("selected");
  			openedCards[1].classList.remove("selected");
 
@@ -114,11 +97,14 @@ resetGame();
 
  			if (matchesCount >= 8) { // The winning condition
  				console.log("You Won !");
+
+ 				// Show the dialog (the winning page)
  				document.getElementById("winning").showModal();
+ 				stopTimer();
  			}
  			
  		}
- 		else {
+ 		else { // The two selected cards did not match
  			console.log("Not Match");
 
  			// Animate here if possible
@@ -137,12 +123,8 @@ resetGame();
 			 	openedCards.pop();
 			 	openedCards.pop();
 			 	unmatchedCardsTimerIsRunning = false;
-			 }, 750);
-
- 				
+			 }, 750);		
  		}
-
- 		
  	}
  });
 
@@ -151,14 +133,6 @@ function isCardsMatched() {
 	return (openedCards[0].children[0].className == openedCards[1].children[0].className);
 
 }
-
-
-/*
- * Display the cards on the page
- *   - shuffle the list of cards using the provided "shuffle" method below
- *   - loop through each card and create its HTML
- *   - add each card's HTML to the page
- */
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -195,15 +169,19 @@ function resetGame() {
 	shuffeledContent = [];
 	document.getElementsByClassName("moves")[0].innerText = "0";
 
+	// Use the list of cards content (list of images to be used in the deck) to create an array to be shuffled later
 	for (var i = 0; i < cardsContent.length; i++) {
 		shuffeledContent.push(cardsContent[i]);
 		shuffeledContent.push(cardsContent[i]);
 	}
 
+	// Same array was used to store the shuffled array to reduce number of variables
 	shuffeledContent = shuffle(shuffeledContent);
 
 	let virtualDeck = document.createDocumentFragment();
+	// This virtal deck will contain the DOM of all cards
 
+	// This loop creates the DOM content of all cards
 	for (let i = 0; i < 16; i++) {
 		let card1 = document.createElement("li");
 		let card1Content = document.createElement("i");
@@ -213,15 +191,14 @@ function resetGame() {
 
 		card1.classList.add("card");
 
-		// This is for testing only, remove when game is complete
-		//card1.classList.add("show");
 		card1.appendChild(card1Content);
 		virtualDeck.appendChild(card1);
 	}
 
-	 // Add the shuffeled cards into the deck
+	 // Add the virtal deck containing the shuffeled cards into the deck
 	 document.getElementsByClassName("deck")[0].appendChild(virtualDeck);
 
+	 // Aplying animation when adding cards to the deck
 	 $( ".card" ).show( "size", {}, 500, function(){
 	 	let cards = document.getElementsByClassName("card");
 	 	for (let i = 0; i < cards.length; i++)
@@ -229,8 +206,71 @@ function resetGame() {
 	 		cards[i].setAttribute("style", "display: flex");
 	 	}
 	 });
+
+	 // Reset stars
+	 evaluateStars();
+
+	 // Reser Timer
+	 resetTimer();
+
 }
 
+function evaluateStars() {
+
+	if (attempts == 0) { // Make all stars filled
+		stars.children[1].children[0].classList.remove("fa-star-o");
+		stars.children[2].children[0].classList.remove("fa-star-o");
+		
+		stars.children[1].children[0].classList.add("fa-star");
+		stars.children[2].children[0].classList.add("fa-star");
+	}
+
+	else if (attempts < 14) { // Do nothing when attempts is below 12
+		return;
+	}
+
+	else if (attempts < 17) { // Reduce one star (the last star in the right)
+		stars.children[2].children[0].classList.remove("fa-star");
+		stars.children[2].children[0].classList.add("fa-star-o");
+	}
+
+	else if (attempts > 17) { // Reduce one more star (the middle star)
+		stars.children[1].children[0].classList.remove("fa-star");
+		stars.children[1].children[0].classList.add("fa-star-o");
+	}
+	
+}
+
+
+function startTimer() {
+	seconds++;
+
+	if (seconds <  10) {secondsText.innerHTML = "0" + seconds;}
+	if (seconds >  9) {secondsText.innerHTML = seconds;}
+	if (seconds > 59) {
+		minutes++;
+		seconds = 0;
+		secondsText.innerHTML = "00";
+		minutesText.innerHTML = "0" + minutes;
+	}
+
+	if (minutes > 9) {minutesText.innerHTML = minutes;}
+}
+
+function stopTimer() {
+	clearInterval(interval);
+}
+
+function resetTimer() {
+	seconds = 0;
+	minutes = 0;
+
+	secondsText.innerHTML = "00";
+	minutesText.innerHTML = "00";
+
+	clearInterval(interval);
+	interval = setInterval(startTimer, 1000);
+}
 
 /*
  * set up the event listener for a card. If a card is clicked:
