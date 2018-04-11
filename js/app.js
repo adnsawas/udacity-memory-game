@@ -3,6 +3,7 @@
  */
 
 let stars = document.getElementsByClassName("stars")[0];
+let numOfStars = 3;
 let openedCards = [];
 let matchesCount = 0;
 let attempts = 0;
@@ -99,7 +100,8 @@ resetGame();
  				console.log("You Won !");
 
  				// Show the dialog (the winning page)
- 				document.getElementById("winning").showModal();
+ 				winGame();
+ 				
  				stopTimer();
  			}
  			
@@ -152,6 +154,16 @@ function shuffle(array) {
 function resetGame() {
 	if (document.getElementById("winning").open) {
 		document.getElementById("winning").close();
+		let starsRatingHolder = document.getElementsByClassName("stars_rating");
+
+		starsRatingHolder[0].children[0].classList.add("fa-star-o");
+		starsRatingHolder[0].children[0].classList.remove("fa-star");
+
+		starsRatingHolder[0].children[1].classList.add("fa-star-o");
+		starsRatingHolder[0].children[1].classList.remove("fa-star");
+
+		starsRatingHolder[0].children[2].classList.add("fa-star-o");
+		starsRatingHolder[0].children[2].classList.remove("fa-star");
 	}
 
 	// Reset all deck cards
@@ -223,6 +235,7 @@ function evaluateStars() {
 		
 		stars.children[1].children[0].classList.add("fa-star");
 		stars.children[2].children[0].classList.add("fa-star");
+		numOfStars = 3;
 	}
 
 	else if (attempts < 14) { // Do nothing when attempts is below 12
@@ -232,13 +245,36 @@ function evaluateStars() {
 	else if (attempts < 17) { // Reduce one star (the last star in the right)
 		stars.children[2].children[0].classList.remove("fa-star");
 		stars.children[2].children[0].classList.add("fa-star-o");
+		numOfStars = 2;
 	}
 
 	else if (attempts > 17) { // Reduce one more star (the middle star)
 		stars.children[1].children[0].classList.remove("fa-star");
 		stars.children[1].children[0].classList.add("fa-star-o");
+		numOfStars = 1;
 	}
 	
+}
+
+function winGame() {
+
+	let starsRatingHolder = document.getElementsByClassName("stars_rating");
+	if (numOfStars >= 1) {
+		starsRatingHolder[0].children[0].classList.add("fa-star");
+		starsRatingHolder[0].children[0].classList.remove("fa-star-o");
+	}
+	if (numOfStars  >= 2) {
+		starsRatingHolder[0].children[1].classList.add("fa-star");
+		starsRatingHolder[0].children[1].classList.remove("fa-star-o");
+	}
+	if (numOfStars == 3) {
+		starsRatingHolder[0].children[2].classList.add("fa-star");
+		starsRatingHolder[0].children[2].classList.remove("fa-star-o");
+	}
+
+	document.getElementById("timeTaken").innerHTML = `${minutes} Minutes and ${seconds} seconds`;
+
+	document.getElementById("winning").showModal();
 }
 
 
