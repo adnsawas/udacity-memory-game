@@ -2,7 +2,7 @@
 
 ## Table of Contents
 
-* [Game Objective](#game objective)
+* [Game Objective](#game_objective)
 * [Contributing](#contributing)
 
 ## Game Objective
